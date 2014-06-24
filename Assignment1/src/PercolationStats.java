@@ -1,4 +1,8 @@
-
+/**
+ * 
+ * @author matt
+ *
+ */
 public class PercolationStats {
 
 	/**
@@ -24,7 +28,7 @@ public class PercolationStats {
 		}
 		System.out.println("N: " + N + "\nT: " + T);
 		
-		
+		Percolation percolator = new Percolation(N);
 		
 	}
 

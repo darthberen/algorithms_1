@@ -1,12 +1,63 @@
-
+/**
+ * 
+ * @author Matt Price
+ *
+ */
 public class Percolation {
+	private int N;
+	private WeightedQuickUnionUF ufGrid;
+	private boolean []openGrid;
+	private int upperPoint;
+	private int lowerPoint;
+	
 	/**
 	 * Create a N-by-N grid with all sites blocked
 	 * 
 	 * @param N height/width of the grid
 	 */
 	public Percolation(int N) {
+		this.N = N;
+		ufGrid = new WeightedQuickUnionUF(N*N + 2);
+		openGrid = new boolean[N*N];
+		for (int i = 0; i < openGrid.length; i++) {
+			openGrid[i] = false;
+		}
 		
+		// connect the upper point (position N*N) to the top of the grid
+		upperPoint = N*N;
+		
+		for (int i = 0; i < N; i++) {
+			ufGrid.union(upperPoint, i);	
+		}
+		
+		// connect the lower point (position N*N+1) to the bottom of the grid
+		lowerPoint = N*N + 1;
+		for (int i = (N*(N-1)); i < N*N; i++) {
+			ufGrid.union(lowerPoint, i);	
+		}
+		System.out.println((N*(N-1)));
+		print();
+	}
+	
+	/**
+	 * Takes a row and a column and calculates the position in a 1d array
+	 * those spots refer to.
+	 * 
+	 * @param row
+	 * @param col
+	 * @return position
+	 */
+	private int getPosition(int row, int col) {
+		int pos = ((row - 1) * N) + (col - 1);
+		System.out.println("Pos: " + pos);
+		if (pos < 1 || pos >= N*N) {
+			pos = -1;
+		}
+		return pos;
+	}
+	
+	private void print() {
+		System.out.println(ufGrid.toString());
 	}
 	
 	/**
@@ -16,6 +67,9 @@ public class Percolation {
 	 * @param j column
 	 */
 	public void open(int i, int j) {
+		if (i < 1 || i > N || j < 1 || j > N) {
+			throw new java.lang.IndexOutOfBoundsException("row and/or must be int he range (1, N)");
+		}
 		
 	}
 	
@@ -23,11 +77,14 @@ public class Percolation {
 	 * Is site (row i, column j) open?
 	 * 
 	 * @param i row
-	 * @param k column
+	 * @param j column
 	 * @return true if open, false otherwise
 	 */
-	public boolean isOpen(int i, int k) {
-		return true;
+	public boolean isOpen(int i, int j) {
+		if (i < 1 || i > N || j < 1 || j > N) {
+			throw new java.lang.IndexOutOfBoundsException("row and/or must be int he range (1, N)");
+		}
+		return openGrid[getPosition(i, j)];
 	}
 	
 	/**
@@ -38,7 +95,10 @@ public class Percolation {
 	 * @return true if full, false otherwise
 	 */
 	public boolean isFull(int i, int j) {
-		return true;
+		if (i < 1 || i > N || j < 1 || j > N) {
+			throw new java.lang.IndexOutOfBoundsException("row and/or must be int he range (1, N)");
+		}
+		return ufGrid.connected(getPosition(i, j), upperPoint);
 	}
 	
 	/**
@@ -47,6 +107,6 @@ public class Percolation {
 	 * @return true if percolates, false otherwise
 	 */
 	public boolean percolates() {
-		return true;
+		return ufGrid.connected(upperPoint, lowerPoint);
 	}
 }
