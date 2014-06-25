@@ -35,8 +35,6 @@ public class Percolation {
 		for (int i = (N*(N-1)); i < N*N; i++) {
 			ufGrid.union(lowerPoint, i);	
 		}
-		System.out.println((N*(N-1)));
-		print();
 	}
 	
 	/**
@@ -49,17 +47,12 @@ public class Percolation {
 	 */
 	private int getPosition(int row, int col) {
 		int pos = ((row - 1) * N) + (col - 1);
-		System.out.println("Pos: " + pos);
-		if (pos < 1 || pos >= N*N) {
+		if (pos < 0 || pos >= N*N) {
 			pos = -1;
 		}
 		return pos;
 	}
-	
-	private void print() {
-		System.out.println(ufGrid.toString());
-	}
-	
+
 	/**
 	 * Open site (row i, column j) if it is not already
 	 * 
@@ -68,9 +61,19 @@ public class Percolation {
 	 */
 	public void open(int i, int j) {
 		if (i < 1 || i > N || j < 1 || j > N) {
-			throw new java.lang.IndexOutOfBoundsException("row and/or must be int he range (1, N)");
+			throw new java.lang.IndexOutOfBoundsException("row and/or must be in the range [1, N]");
 		}
-		
+		int spot = getPosition(i, j);
+		openGrid[spot] = true;
+
+		int tmp = getPosition(i-1, j);
+		if (tmp != -1 && openGrid[tmp]) ufGrid.union(tmp, spot);
+		tmp = getPosition(i+1, j);
+		if (tmp != -1 && openGrid[tmp]) ufGrid.union(tmp, spot);
+		tmp = getPosition(i, j-1);
+		if (tmp != -1 && openGrid[tmp]) ufGrid.union(tmp, spot);
+		tmp = getPosition(i, j+1);
+		if (tmp != -1 && openGrid[tmp]) ufGrid.union(tmp, spot);
 	}
 	
 	/**
@@ -82,7 +85,7 @@ public class Percolation {
 	 */
 	public boolean isOpen(int i, int j) {
 		if (i < 1 || i > N || j < 1 || j > N) {
-			throw new java.lang.IndexOutOfBoundsException("row and/or must be int he range (1, N)");
+			throw new java.lang.IndexOutOfBoundsException("row and/or must be in the range [1, N]");
 		}
 		return openGrid[getPosition(i, j)];
 	}
@@ -96,7 +99,7 @@ public class Percolation {
 	 */
 	public boolean isFull(int i, int j) {
 		if (i < 1 || i > N || j < 1 || j > N) {
-			throw new java.lang.IndexOutOfBoundsException("row and/or must be int he range (1, N)");
+			throw new java.lang.IndexOutOfBoundsException("row and/or must be in the range [1, N]");
 		}
 		return ufGrid.connected(getPosition(i, j), upperPoint);
 	}

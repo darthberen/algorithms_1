@@ -4,7 +4,8 @@
  *
  */
 public class PercolationStats {
-
+	private double mean, stddev, confidenceHi, confidenceLo;
+	
 	/**
 	 * Executes the test client.  Two parameters should be provided:
 	 * N: size of the grid
@@ -26,19 +27,42 @@ public class PercolationStats {
 			System.out.println("N and T must be greater than 0");
 			System.exit(1);
 		}
-		System.out.println("N: " + N + "\nT: " + T);
-		
-		Percolation percolator = new Percolation(N);
-		
+		PercolationStats pt = new PercolationStats(N, T);
+		System.out.println("mean                    = " + pt.mean());
+		System.out.println("stddev                  = " + pt.stddev());
+		System.out.println("95% confidence interval = " + pt.confidenceLo() + ", " + pt.confidenceHi());
 	}
 
+	public PercolationStats(int N, int T) {
+		double points[] = new double[T];
+		for (int t = 0; t < T; t++) {
+			Percolation percolator = new Percolation(N);
+			int attempts = 0;
+			do {
+				int row = 0;
+				int col = 0;
+				do {
+					row = StdRandom.uniform(1, N+1);
+					col = StdRandom.uniform(1, N+1);
+				} while (percolator.isOpen(row, col));
+				percolator.open(row, col);
+				attempts++;
+			} while (!percolator.percolates());
+
+			points[t] = (double) attempts / (N*N);
+		}
+		mean = StdStats.mean(points);
+		stddev = StdStats.stddev(points);
+		confidenceLo = mean - ((1.96 * stddev) / Math.sqrt(T));
+		confidenceHi = mean + ((1.96 * stddev) / Math.sqrt(T));
+	}
 	/**
 	 * Sample mean of percolation threshold
 	 * 
 	 * @return mean
 	 */
 	public double mean() {
-		return 0;
+		return mean;
 	}
 	
 	/**
@@ -47,7 +71,7 @@ public class PercolationStats {
 	 * @return standard deviation
 	 */
 	public double stddev() {
-		return 0;
+		return stddev;
 	}
 	
 	/**
@@ -56,7 +80,7 @@ public class PercolationStats {
 	 * @return confidence level
 	 */
 	public double confidenceLo() {
-		return 0;
+		return confidenceLo;
 	}
 	
 	/**
@@ -65,6 +89,6 @@ public class PercolationStats {
 	 * @return confidence level
 	 */
 	public double confidenceHi() {
-		return 0;
+		return confidenceHi;
 	}
 }
