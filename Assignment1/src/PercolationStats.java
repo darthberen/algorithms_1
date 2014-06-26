@@ -23,10 +23,6 @@ public class PercolationStats {
 		}
 		int N = Integer.parseInt(args[0]);
 		int T = Integer.parseInt(args[1]);
-		if (N <= 0 && T <= 0) {
-			System.out.println("N and T must be greater than 0");
-			System.exit(1);
-		}
 		PercolationStats pt = new PercolationStats(N, T);
 		System.out.println("mean                    = " + pt.mean());
 		System.out.println("stddev                  = " + pt.stddev());
@@ -34,7 +30,11 @@ public class PercolationStats {
 	}
 
 	public PercolationStats(int N, int T) {
+		if (N <= 0 || T <= 0) {
+			throw new java.lang.IllegalArgumentException("N and T must be greater than 0");
+		}
 		double points[] = new double[T];
+
 		for (int t = 0; t < T; t++) {
 			Percolation percolator = new Percolation(N);
 			int attempts = 0;
@@ -51,6 +51,8 @@ public class PercolationStats {
 
 			points[t] = (double) attempts / (N*N);
 		}
+
+		
 		mean = StdStats.mean(points);
 		stddev = StdStats.stddev(points);
 		confidenceLo = mean - ((1.96 * stddev) / Math.sqrt(T));
